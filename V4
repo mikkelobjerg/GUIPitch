@@ -1,0 +1,293 @@
+import tkinter as tk
+from tkinter import PhotoImage
+from tkinter import messagebox
+import vlc
+import webbrowser
+
+
+#---------------------------------------Log in function-----------------------------------#
+
+def login(event=None):
+    valid_credentials = {
+        "MBJ": "xxx",
+        "NT": "xxx",
+        "DS": "xxx",
+        "JK": "xxx",
+        "MA": "xxx",
+        "PW": "xxx",
+    }
+    entered_username = username_entry.get()
+    entered_password = password_entry.get()
+
+    # -----------------------------------Preface login-------------------------------------#
+
+    if entered_username in valid_credentials and valid_credentials[entered_username] == entered_password:
+        print("Successfully logged in")
+        window.destroy()
+        TMG_preface = tk.Tk()
+        TMG_preface.title("THE MARKETING GUY")
+        TMG_preface.geometry("1500x800")
+        TMG_preface.iconbitmap('images/icon.ico')
+        TMG_preface.state("zoomed")
+        bg_image_preface = PhotoImage(file="images/logowall.png")
+        canvas_preface = tk.Canvas(TMG_preface, width=640, height=840)
+        canvas_preface.pack(fill="both", expand=True)
+        canvas_preface.create_image(0, 0, image=bg_image_preface, anchor="nw")
+
+
+
+        # ----------------------------------- TMG Dashboard -------------------------------------#
+
+        def validering(event=None):
+            TMG_preface.destroy()
+            TMG_window = tk.Tk()
+            TMG_window.title("TMG Dashboard")
+            TMG_window.geometry("1500x800")
+            TMG_window.iconbitmap('images/icon.ico')
+            TMG_window.state("zoomed")
+
+
+            bg_image_dashboard = PhotoImage(file="images/white_background.png")
+            TMG_canvas = tk.Canvas(TMG_window, width=1600, height=800)
+            TMG_canvas.pack(fill="both", expand=True)
+            TMG_canvas.create_image(750, 400, image=bg_image_dashboard, anchor="center")
+
+
+
+            TMG_canvas.create_text(
+                750, 65
+                ,
+                text="THE MARKETING GUY BLUEPRINT",
+                fill="#000000",
+                font=("Khand", int(40.0)))
+
+
+
+
+            # -------------------Images on TMG Dashboard--------------------------#
+
+            # Loading images and placing them on the dashboard
+            # DEMON-billede
+            TMG_Demon_Test = PhotoImage(file="images/toggler.png")  # Demon Image
+            toggler_image = TMG_canvas.create_image(1200, 400, image=TMG_Demon_Test)  # Placing the image on board
+            TMG_Demon_Test_Highlighted = PhotoImage(file="images/toggler_highlighted.png")  # highlighted image
+            # Rapport-billede
+            TMG_Rapport_Test = PhotoImage(file="images/rapport.png")  # Rapport image
+            rapport_image = TMG_canvas.create_image(700, 300, image=TMG_Rapport_Test)  # Placing the image on board
+            TMG_Rapport_Highlighted = PhotoImage(file="images/rapport_highlighted.png")  # Replaced with highlighted image
+
+            # Defining hoover functions
+            def on_enter1(event):
+                TMG_canvas.itemconfig(rapport_image, image=TMG_Rapport_Highlighted)
+
+            def on_leave1(event):
+                TMG_canvas.itemconfig(rapport_image, image=TMG_Rapport_Test)
+
+            def on_enter(event):
+                TMG_canvas.itemconfig(toggler_image, image=TMG_Demon_Test_Highlighted)
+
+            def on_leave(event):
+                TMG_canvas.itemconfig(toggler_image, image=TMG_Demon_Test)
+
+
+            # Binding the hover events
+            TMG_canvas.tag_bind(toggler_image, "<Enter>", on_enter)
+            TMG_canvas.tag_bind(toggler_image, "<Leave>", on_leave)
+            TMG_canvas.tag_bind(rapport_image, "<Enter>", on_enter1)
+            TMG_canvas.tag_bind(rapport_image, "<Leave>", on_leave1)
+
+
+            #Logo Button on page
+            def logowall():
+                TMG_logowall = tk.Toplevel()
+                TMG_logowall.title("THE MARKETING GUY")
+                TMG_logowall.geometry("1500x800")
+                TMG_logowall.iconbitmap('images/icon.ico')
+                TMG_logowall.state("zoomed")
+
+                TMG_logowall.bg_image_logowall = PhotoImage(file="images/logowall.png") #this ensures, that the image is not garbage collected. For the future.
+                canvas_logowall = tk.Canvas(TMG_logowall, width=640, height=840)
+                canvas_logowall.pack(fill="both", expand=True)
+                canvas_logowall.create_image(0, 0, image=TMG_logowall.bg_image_logowall, anchor="nw")
+
+                canvas_logowall.create_text(
+                    750, 65,
+                    text="THE MARKETING GUY BLUEPRINT",
+                    fill="#000000",
+                    font=("Khand", int(40.0)))
+
+
+
+            #--------------------image as button----------------------#
+            # Load the image for the canvas
+            canvas_image = PhotoImage(file="images/Button_Efter_validering.png")
+            canvas_image_highlighted = PhotoImage(file="images/Button_Efter_validering_Highlight.png")
+            # Place the image directly on the canvas
+            image_on_canvas = TMG_canvas.create_image(1200, 700, image=canvas_image, anchor="center")
+            # Bind a click event to the canvas image
+            def on_canvas_click(event):
+                logowall()
+            TMG_canvas.tag_bind(image_on_canvas, "<Button-1>", on_canvas_click)
+
+
+            def on_enter2(event):
+                TMG_canvas.itemconfig(image_on_canvas, image=canvas_image_highlighted)
+            def on_leave2(event):
+                TMG_canvas.itemconfig(image_on_canvas, image=canvas_image)
+
+
+            TMG_canvas.tag_bind(image_on_canvas, "<Enter>", on_enter2)
+            TMG_canvas.tag_bind(image_on_canvas, "<Leave>", on_leave2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            # -----------------Open PDF when clicked-----------------#
+            def open_pdf(event=None):
+                pdf_path = "C:/Users/mbj/PycharmProjects/pythonProject1/PDF/Anonymiseret rapport.pdf"
+                formatted_path = pdf_path.replace("\\", "/").replace(" ", "%20")
+                url = f"file:///{formatted_path}"
+                webbrowser.open(url)
+
+            TMG_canvas.tag_bind(rapport_image, "<Button-1>", open_pdf)
+
+            # ---------------- Play video on click function ----------------#
+            def play_video():
+                video_window = tk.Toplevel(TMG_window)
+                video_window.title("TMG Video")
+                video_window.iconbitmap('images/icon.ico')
+
+                # Window size when opening
+                base_width = 400
+                width = base_width
+                height = int(base_width * (5 / 4))  # 4:5 ratio
+                video_window.geometry(f"{width}x{height}")
+
+                # --------------VLC Settings-------------#
+                # Create an instance of the VLC player
+                Instance = vlc.Instance()
+                player = Instance.media_player_new()
+
+                # Create a new Frame in the Toplevel window to embed the video
+                video_frame = tk.Frame(video_window, background="black")
+                video_frame.pack(fill=tk.BOTH, expand=True)
+
+                # Get the window ID of the frame for Windows
+                video_window.update_idletasks()
+                win_id = video_frame.winfo_id()
+                player.set_hwnd(win_id)
+
+                # Set media to VLC player
+                Media = Instance.media_new("ad_videos/video1.mp4")
+                Media.get_mrl()
+                player.set_media(Media)
+
+                # Control buttons
+                controls_frame = tk.Frame(video_window)
+                controls_frame.pack(fill=tk.X)
+
+                play_button = tk.Button(controls_frame, text="Play", font="Khand", command=lambda: player.play())
+                pause_button = tk.Button(controls_frame, text="Pause", font="Khand", command=lambda: player.pause())
+                stop_button = tk.Button(controls_frame, text="Stop", font="Khand", command=lambda: player.stop())
+
+                play_button.pack(side=tk.LEFT)
+                pause_button.pack(side=tk.LEFT)
+                stop_button.pack(side=tk.LEFT)
+
+                # Play the video
+                player.play()
+
+                # Bind the close window event
+                video_window.protocol("WM_DELETE_WINDOW", lambda: on_video_window_close(player, video_window))
+
+            def on_click(event):
+                play_video()
+
+            def on_video_window_close(player, video_window):
+                player.stop()  # Stop the player
+                player.release()  # Release the player resources
+                video_window.destroy()  # Close the window
+
+            TMG_canvas.tag_bind(toggler_image, "<Button-1>", on_click)
+
+            TMG_window.mainloop()
+
+
+        # --------------- TMG Preface Button ------------------- #
+        def create_widget_on_canvas(widget, x, y):
+            canvas_preface.create_window(x, y, window=widget)
+
+        validering_button = tk.Button(TMG_preface, text="Valideringsforløb", font="Khand", command=validering)
+        create_widget_on_canvas(validering_button, 750, 240)
+
+        TMG_preface.mainloop()
+    else:
+        messagebox.showerror(title="TMG Login Error", message="Incorrect Credentials for TMG Board")
+        # error = tk.Tk()
+        # error.geometry("500x250")
+        #  error.iconbitmap('images/icon.ico')
+        # ------Button-------#
+        # def close_error():
+         #   error.destroy()
+        # close_button = tk.Button(error, text="TILBAGE", command=close_error, font="khand")
+        # close_button.pack(expand=True)
+        # error.mainloop()
+
+
+
+# ---------------------------------- TMG Login ------------------------------------- #
+
+# Function to open op start window in the center
+def center_window(win, width=640, height=740):
+    # Get the screen dimension
+    screen_width = win.winfo_screenwidth()
+    screen_height = win.winfo_screenheight()
+    # Calculate x and y coordinates
+    x = int((screen_width / 2) - (width / 2))
+    y = int((screen_height / 2.2) - (height / 2))
+    win.geometry(f'{width}x{height}+{x}+{y}')
+
+
+window = tk.Tk()
+window.title("TMG Login")
+window.geometry("0x0") # For at ikke se et vindue i starten der rykker sig
+window.resizable(False, False)
+window.iconbitmap("images/icon.ico")
+# Center the window
+center_window(window)
+
+
+bg_image = PhotoImage(file="images/Baggrund PP - Mikkel.png")
+canvas = tk.Canvas(window, width=640, height=840)
+canvas.pack(fill="both", expand=True)
+canvas.create_image(0, 0, image=bg_image, anchor="nw")
+
+username_entry = tk.Entry(window)
+password_entry = tk.Entry(window, show="*")
+login_button = tk.Button(window, text="Login til TMG Dashboard", font="Khand", command=login)
+
+def create_widget_on_canvas(widget, x, y):
+    canvas.create_window(x, y, window=widget)
+
+create_widget_on_canvas(username_entry, 370, 220)
+create_widget_on_canvas(password_entry, 370, 280)
+create_widget_on_canvas(login_button, 320, 380)
+
+canvas.create_text(320, 100, text="THE MARKETING GUY", fill="#FFFFFF", font=("Khand", int(50.0)))
+canvas.create_text(230, 220, text="Username:", fill="#999999", font=("Khand", int(24.0)))
+canvas.create_text(230, 280, text="Password:", fill="#999999", font=("Khand", int(24.0)))
+
+window.bind('<Return>', login)
+
+window.mainloop()
